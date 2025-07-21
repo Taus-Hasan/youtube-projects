@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide: YouTube Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: The application is structured as a single-page, top-to-bottom guide that transforms the static documentation into an interactive learning experience. It begins with a high-level overview and prerequisites, moves to an interactive code walkthrough section that visually connects explanations to the corresponding code lines, then provides a clear usage guide, and culminates in a simulated "live demo" to let users see the script's expected output without any setup. This structure was chosen to guide the user from understanding the 'what' and 'why' to the 'how', making the technical information much more digestible and engaging than a static document. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Script components overview -> Goal: Inform -> Viz: Donut Chart -> Interaction: Hover to see details -> Justification: Provides a quick visual breakdown of the script's workflow to orient the user. -> Library: Chart.js
+        - Report Info: Prerequisites -> Goal: Inform -> Presentation: Styled checklist with code block -> Interaction: None, focus on clarity and easy copy-paste. -> Justification: Clearly separates setup requirements.
+        - Report Info: Code + "How it Works" -> Goal: Organize/Inform -> Presentation: Two-column layout with explanations and code -> Interaction: Clicking an explanation step highlights the relevant code lines -> Justification: The core interaction; directly links abstract explanations to concrete code, which is the most effective way to teach what the script does. -> Library/Method: Vanilla JS.
+        - Report Info: Usage steps -> Goal: Inform -> Presentation: Numbered, styled steps -> Interaction: None, clarity is paramount. -> Justification: Simple, scannable instructions for execution.
+        - Report Info: Script's console output -> Goal: Engage/Inform -> Presentation: Simulated input/output form -> Interaction: User clicks a button to see fake console output -> Justification: Provides a safe, "live" demonstration of the script's functionality, offering immediate feedback and enhancing understanding. -> Library/Method: Vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .highlight {
+            background-color: #ccfbf1;
+            transition: background-color 0.3s ease-in-out;
+            border-left: 4px solid #0d9488;
+            padding-left: 8px;
+            margin-left: -12px;
+        }
+        .step-active {
+            background-color: #f0fdfa;
+            border-color: #14b8a6;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto max-w-6xl p-4 sm:p-6 md:p-8">
+
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-700 mb-4">Interactive YouTube Downloader Guide</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An engaging walkthrough of a simple Python script for downloading YouTube videos. Explore the code, understand its components, and see how it works—all in one place.</p>
+        </header>
+
+        <section id="overview" class="mb-12 md:mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-2xl font-bold mb-4 text-teal-700">What You'll Need</h2>
+                    <p class="text-gray-600 mb-6">Before using the script, ensure you have the following set up on your system. This is a one-time setup.</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="text-teal-500 font-bold text-xl mr-3 mt-1">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-lg">Python</h3>
+                                <p class="text-gray-500">The script is written in Python. Make sure you have a recent version installed.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-500 font-bold text-xl mr-3 mt-1">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-lg">Pytube Library</h3>
+                                <p class="text-gray-500 mb-2">This is the special library that does all the heavy lifting. Install it with this command:</p>
+                                <pre class="bg-gray-100 text-gray-700 p-3 rounded-md text-sm cursor-pointer" onclick="navigator.clipboard.writeText('pip install pytube')"><code>pip install pytube</code></pre>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                     <h2 class="text-2xl font-bold mb-4 text-center text-teal-700">Script Components</h2>
+                     <p class="text-gray-600 mb-4 text-center text-sm">The script's logic can be broken down into three main parts, visualized here.</p>
+                    <div class="chart-container">
+                        <canvas id="componentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="walkthrough" class="mb-12 md:mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-teal-700">Interactive Code Walkthrough</h2>
+                <p class="text-lg text-gray-600 mt-2">Click on any step on the left to see the corresponding code line(s) highlighted on the right.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div id="steps-container" class="space-y-3">
+                </div>
+                <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg font-mono text-sm overflow-x-auto">
+                    <pre><code id="code-block"></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="usage" class="mb-12 md:mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-teal-700">Usage Guide</h2>
+                <p class="text-lg text-gray-600 mt-2">Ready to run it yourself? Follow these simple steps.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="mx-auto bg-teal-100 text-teal-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4">1</div>
+                    <h3 class="font-semibold text-lg">Save the Code</h3>
+                    <p class="text-gray-500">Save the Python script as a file named `youtube_downloader.py`.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="mx-auto bg-teal-100 text-teal-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4">2</div>
+                    <h3 class="font-semibold text-lg">Open Terminal</h3>
+                    <p class="text-gray-500">Navigate to the directory where you saved the file.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="mx-auto bg-teal-100 text-teal-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4">3</div>
+                    <h3 class="font-semibold text-lg">Run the Script</h3>
+                    <p class="text-gray-500">Execute the command:<br>`python youtube_downloader.py`</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="mx-auto bg-teal-100 text-teal-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4">4</div>
+                    <h3 class="font-semibold text-lg">Enter URL</h3>
+                    <p class="text-gray-500">When prompted, paste a YouTube video URL and press Enter.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-teal-700">Live Simulation</h2>
+                <p class="text-lg text-gray-600 mt-2">Curious about the output? Paste a fake URL below and hit "Simulate Download" to see what the script would print in your terminal.</p>
+            </div>
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input id="demo-url" type="text" class="flex-grow p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none transition" placeholder="Paste a YouTube URL here...">
+                    <button id="demo-btn" class="bg-teal-600 text-white font-semibold py-3 px-6 rounded-md hover:bg-teal-700 transition duration-300 shadow-sm">Simulate Download</button>
+                </div>
+                <div id="demo-output" class="mt-6 bg-gray-800 text-white p-4 rounded-lg font-mono text-xs h-64 overflow-y-auto hidden">
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const codeText = [
+                `from pytube import YouTube`,
+                ``,
+                `def downloader():`,
+                `    url = input("Enter the url:")`,
+                ``,
+                `    my_video = YouTube(url)`,
+                ``,
+                `    print(my_video.title)`,
+                `    print(my_video.thumbnail_url)`,
+                ``,
+                `    for stream in my_video.streams:`,
+                `        print(stream)`,
+                ``,
+                `    my_video = my_video.streams.get_highest_resolution()`,
+                ``,
+                `    my_video.download()`,
+                ``,
+                `downloader()`
+            ];
+
+            const stepsData = [
+                { title: '1. Import the Library', description: 'The script starts by importing the necessary `YouTube` class from the `pytube` library, which contains all the functionality we need.', lines: [0] },
+                { title: '2. Get User Input', description: 'It then prompts the user to enter the URL of the YouTube video they want to download and stores it in the `url` variable.', lines: [3] },
+                { title: '3. Create a YouTube Object', description: 'Using the URL, it creates a `YouTube` object. This object is the main interface for accessing video details and streams.', lines: [5] },
+                { title: '4. Display Video Info', description: 'For confirmation, it prints the video\'s title and the URL of its thumbnail image to the console.', lines: [7, 8] },
+                { title: '5. List Available Streams', description: 'The script iterates through and prints all available video streams. A stream represents a specific version of the video (e.g., 720p, 1080p, audio-only).', lines: [10, 11] },
+                { title: '6. Select the Best Stream', description: 'From all the options, it specifically selects the stream with the highest video resolution available.', lines: [13] },
+                { title: '7. Download the Video', description: 'Finally, it calls the `download()` method on the selected stream, saving the video file to the same directory the script is run from.', lines: [15] },
+                { title: '8. Run the Function', description: 'This line calls the `downloader` function to start the whole process when the script is executed.', lines: [17] },
+            ];
+
+            const codeBlock = document.getElementById('code-block');
+            codeText.forEach((line, index) => {
+                const span = document.createElement('span');
+                span.textContent = line + '\n';
+                span.id = `line-${index}`;
+                codeBlock.appendChild(span);
+            });
+
+            const stepsContainer = document.getElementById('steps-container');
+            stepsData.forEach((step, index) => {
+                const div = document.createElement('div');
+                div.className = 'p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition';
+                div.innerHTML = `<h3 class="font-semibold text-lg text-teal-800">${step.title}</h3><p class="text-gray-600">${step.description}</p>`;
+                div.dataset.lines = JSON.stringify(step.lines);
+                div.dataset.index = index;
+                stepsContainer.appendChild(div);
+            });
+            
+            const stepDivs = stepsContainer.querySelectorAll('div');
+            
+            stepsContainer.addEventListener('click', (e) => {
+                const stepDiv = e.target.closest('div[data-lines]');
+                if (!stepDiv) return;
+
+                document.querySelectorAll('#code-block span').forEach(span => span.classList.remove('highlight'));
+                stepDivs.forEach(div => div.classList.remove('step-active'));
+
+                stepDiv.classList.add('step-active');
+                const linesToHighlight = JSON.parse(stepDiv.dataset.lines);
+                linesToHighlight.forEach(lineNumber => {
+                    document.getElementById(`line-${lineNumber}`).classList.add('highlight');
+                });
+            });
+
+            const demoBtn = document.getElementById('demo-btn');
+            const demoOutput = document.getElementById('demo-output');
+            
+            demoBtn.addEventListener('click', () => {
+                demoOutput.classList.remove('hidden');
+                demoOutput.innerHTML = '';
+                
+                const outputLines = [
+                    'Enter the url:https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                    'Rick Astley - Never Gonna Give You Up (Official Music Video)',
+                    'https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg',
+                    '<Stream: itag="18" mime_type="video/mp4" res="360p" fps="30fps" vcodec="avc1.42001E" acodec="mp4a.40.2" progressive="True" type="video">',
+                    '<Stream: itag="22" mime_type="video/mp4" res="720p" fps="30fps" vcodec="avc1.64001F" acodec="mp4a.40.2" progressive="True" type="video">',
+                    '<Stream: itag="137" mime_type="video/mp4" res="1080p" fps="30fps" vcodec="avc1.640028" progressive="False" type="video">',
+                    '<Stream: itag="248" mime_type="video/webm" res="1080p" fps="30fps" vcodec="vp9" progressive="False" type="video">',
+                    '<Stream: itag="140" mime_type="audio/mp4" abr="128kbps" acodec="mp4a.40.2" progressive="False" type="audio">',
+                    '... and other streams ...',
+                    '',
+                    'Downloading video...',
+                    'Download complete!',
+                ];
+                
+                let i = 0;
+                function typeLine() {
+                    if (i < outputLines.length) {
+                        const line = document.createElement('p');
+                        line.textContent = outputLines[i];
+                        demoOutput.appendChild(line);
+                        demoOutput.scrollTop = demoOutput.scrollHeight;
+                        i++;
+                        setTimeout(typeLine, 150);
+                    }
+                }
+                typeLine();
+            });
+            
+            const ctx = document.getElementById('componentsChart').getContext('2d');
+            const componentsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Setup & Input', 'Pytube Processing', 'File Download'],
+                    datasets: [{
+                        label: 'Script Components',
+                        data: [25, 55, 20],
+                        backgroundColor: [
+                            'rgb(20, 184, 166)',
+                            'rgb(15, 118, 110)',
+                            'rgb(94, 234, 212)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
